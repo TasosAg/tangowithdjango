@@ -67,6 +67,7 @@ def show_category(request, category_name_slug):
 # Go render the response and return it to the client.
     return render(request, 'rango/category.html', context_dict)
 
+@login_required
 def add_category(request):
     form = CategoryForm()
 # A HTTP POST?
@@ -90,6 +91,7 @@ def add_category(request):
 # Render the form with error messages (if any).
     return render(request, 'rango/add_category.html', {'form': form})
 
+@login_required
 def add_page(request, category_name_slug):
     try:
         category = Category.objects.get(slug=category_name_slug)
@@ -197,11 +199,13 @@ def user_login(request):
                 return HttpResponseRedirect(reverse('index'))
             else:
 # An inactive account was used - no logging in!
-                return HttpResponse("Your Rango account is disabled.")
+				return render_to_response('rango/login.html', {'disabled_account': True}, context)
+#                return HttpResponse("Your Rango account is disabled.")
         else:
 # Bad login details were provided. So we can't log the user in.
+            return render_to_response('rango/login.html', {'bad_details': True}, context)
             print("Invalid login details: {0}, {1}".format(username, password))
-            return HttpResponse("Invalid login details supplied.")
+#            return HttpResponse("Invalid login details supplied.")
 # The request is not a HTTP POST, so display the login form.
 # This scenario would most likely be a HTTP GET.
     else:
